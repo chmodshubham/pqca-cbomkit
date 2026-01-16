@@ -109,7 +109,8 @@ public final class GitService {
                                     + revision.value());
                 }
             } else {
-                final List<Ref> refs = clonedRepo.tagList().call();
+                final List<Ref> refs =
+                        clonedRepo.getRepository().getAllRefs().values().stream().toList();
                 // Try to find a tag matching the exact revision string first ...
                 Ref ref = clonedRepo.getRepository().findRef(revision.value());
                 if (ref == null) {
@@ -129,6 +130,24 @@ public final class GitService {
                                         .findFirst()
                                         .orElse(null);
                     }
+                }
+                if (ref == null) {
+                    // ... otherwise, look for a branch whose name matches the revision.
+                    // This checks both local and remote branches (refs/heads/*, refs/remotes/*)
+                    // by comparing the base(last path segment) of reference path with
+                    // revision.value().
+                    String branchName = "/" + revision.value(); // to match the base of the ref path
+                    ref =
+                            refs.stream()
+                                    .filter(
+                                            r ->
+                                                    r.getName().endsWith(branchName)
+                                                            && (r.getName().startsWith("refs/heads")
+                                                                    || r.getName()
+                                                                            .startsWith(
+                                                                                    "refs/remotes")))
+                                    .findFirst()
+                                    .orElse(null);
                 }
                 if (ref == null) {
                     throw new GitCloneFailed("Revision not found: " + revision.value());
