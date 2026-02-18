@@ -214,6 +214,7 @@ and cryptographic libraries:
 | Python   | [pyca/cryptography](https://cryptography.io/en/latest/)                                       | 100%     |
 | Go       | [crypto](https://pkg.go.dev/crypto) (*standard library*)                                      | 100%[^2] |
 |          | [golang.org/x/crypto](https://pkg.go.dev/golang.org/x/crypto)                                 | Partial[^3] |
+| C++      | [OpenSSL](https://www.openssl.org/)                                                           | partial  |
 
 
 [^1]: We only cover the BouncyCastle *light-weight API* according to [this specification](https://javadoc.io/static/org.bouncycastle/bctls-jdk14/1.80/specifications.html)
