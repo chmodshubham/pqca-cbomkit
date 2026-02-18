@@ -4,6 +4,7 @@
 [![Current Release](https://img.shields.io/github/release/cbomkit/cbomkit.svg)](https://github.com/cbomkit/cbomkit/releases)
 
 CBOMkit is a toolset for dealing with Cryptography Bill of Materials (CBOM). CBOMkit includes a
+
 - **CBOM Generation** ([CBOMkit-hyperion](https://github.com/cbomkit/sonar-cryptography), [CBOMkit-theia](https://github.com/cbomkit/cbomkit-theia)): Generate CBOMs from source code by scanning private and public git repositories to find the used cryptography.
 - **CBOM Viewer ([CBOMkit-coeus](https://github.com/cbomkit/cbomkit?tab=readme-ov-file#cbomkit-coeus))**: Visualize a generated or uploaded CBOM and access comprehensive statistics.
 - **CBOM Compliance Check**: Evaluate CBOMs created or uploaded against specified compliance policies and receive detailed compliance status reports.
@@ -17,15 +18,17 @@ CBOMkit is a toolset for dealing with Cryptography Bill of Materials (CBOM). CBO
 ## Quickstart
 
 Starting the CBOMkit using `docker-compose`.
+
 ```shell
-# clone the repository 
+# clone the repository
 git clone https://github.com/cbomkit/cbomkit
 cd cbomkit
-# run the make command to start the docker compose 
+# run the make command to start the docker compose
 make production
 ```
 
 Alternatively, if you wish to use podman instead of docker, run the following:
+
 ```shell
 # run the make command to start the docker compose using podman
 make production ENGINE=podman
@@ -34,6 +37,7 @@ make production ENGINE=podman
 (This requires podman-compose to have been installed via `pip3 install podman-compose`).
 
 Next steps:
+
 - Enter a git url like [https://github.com/keycloak/keycloak](https://github.com/keycloak/keycloak) or a package url (PURL) like `pkg:maven/io.quarkus/quarkus-core@3.18.1` to generate a CBOM
 - View your generated CBOM by selecting your previously scanned CBOM
 - Drag and drop CBOM from the [examples](example) into the dropbox to view it
@@ -42,8 +46,9 @@ Next steps:
 > By default, the service can be accessed at http://localhost:8001
 
 Deploy using the helm chart to a kubernetes environment. Pass the domain suffix and the cbomkit database creds via helm parameters.
+
 ```shell
-# clone the repository 
+# clone the repository
 git clone https://github.com/cbomkit/cbomkit
 cd cbomkit
 # deploy using helm
@@ -63,13 +68,14 @@ The CBOMkit consists of three integral components: a web frontend, an API server
 ### Frontend and CBOMkit-coeus
 
 The web frontend serves as an intuitive user interface for interacting with the API server. It offers a range of functionalities, including:
- - Browsing the inventory of existing Cryptographic Bills of Materials (CBOMs)
- - Initiating new scans to generate CBOMs 
- - Uploading existing CBOMs for visualization and analysis
+
+- Browsing the inventory of existing Cryptographic Bills of Materials (CBOMs)
+- Initiating new scans to generate CBOMs
+- Uploading existing CBOMs for visualization and analysis
 
 #### CBOMkit-coeus
 
-For enhanced flexibility, the frontend component can be deployed as a standalone version, known as the CBOMkit-coeus. 
+For enhanced flexibility, the frontend component can be deployed as a standalone version, known as the CBOMkit-coeus.
 This option allows for streamlined visualization and compliance analysis independent of the full CBOMkit suite.
 
 ```shell
@@ -79,40 +85,44 @@ make coeus
 
 ### API Server
 
-The API server functions as the central component of the CBOMkit, offering a comprehensive RESTful API 
+The API server functions as the central component of the CBOMkit, offering a comprehensive RESTful API
 (see [OpenAPI specification](openapi.yaml)) with the following key features:
 
 #### Features
+
 - Retrieve the most recent generated CBOMs
 - Access stored CBOMs from the database
-- Perform compliance checks for user-provided CBOMs against specified policies 
+- Perform compliance checks for user-provided CBOMs against specified policies
 - Conduct compliance assessments for stored or generated CBOMs against defined policies
 
-*Sample Query to Retrieve CBOM project identifier*
+_Sample Query to Retrieve CBOM project identifier_
+
 ```shell
 curl --request GET \
   --url 'http://localhost:8081/api/v1/cbom/pkg:github%2Fkeycloak%2Fkeycloak@<commit_hash>'
 ```
 
 In addition to the RESTful API, the server incorporates WebSocket integration, enabling:
- - Initiation of CBOM generation through Git repository scanning 
- - Real-time progress updates during the scanning process, transmitted via WebSocket connection
+
+- Initiation of CBOM generation through Git repository scanning
+- Real-time progress updates during the scanning process, transmitted via WebSocket connection
 
 ### Compliance
 
-A critical component of the CBOMkit is its compliance checking mechanism for Cryptography Bills of Materials (CBOMs). 
-The CBOM structure represents a hierarchical tree of cryptographic assets detected and used by an application. 
-This standardized format facilitates the development and implementation of generalized policies 
+A critical component of the CBOMkit is its compliance checking mechanism for Cryptography Bills of Materials (CBOMs).
+The CBOM structure represents a hierarchical tree of cryptographic assets detected and used by an application.
+This standardized format facilitates the development and implementation of generalized policies
 to identify and flag violations in cryptographic usage.
 
-The CBOMkit currently features a foundational `quantum-safe` compliance check. 
+The CBOMkit currently features a foundational `quantum-safe` compliance check.
 This initial implementation serves as a proof of concept and demonstrates the system's capability to evaluate
 cryptographic components against defined policies.
 
 The compliance framework is designed with extensibility in mind, providing a solid platform for:
- - Implementing additional compliance checks 
- - Enhancing existing verification processes 
- - Integrating custom compliance checks (external)
+
+- Implementing additional compliance checks
+- Enhancing existing verification processes
+- Integrating custom compliance checks (external)
 
 #### External Compliance Evaluation
 
@@ -181,7 +191,7 @@ The overall compliance status is considered not quantum-safe if any component is
 Different deployment configurations utilize distinct sources for compliance verification.
 
 | Deployment       | How is the compliance check performed?                                                                                                                                                                                                                                                                                                                                                                                               |
-|------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `coeus`          | A `quantum-safe` algorithm compliance check is natively implemented within the frontend. This integration allows for immediate, client-side assessment of basic quantum resistance criteria.                                                                                                                                                                                                                                         |
 | `production`     | In the standard deployment, a core compliance service is integrated into the backend service. This implementation enables the execution of compliance checks via the RESTful API, providing a scalable and centralized approach to cryptographic policy verification.                                                                                                                                                                |
 | `ext-compliance` | In advanced deployment scenarios, compliance evaluation is delegated to a dedicated external service. This service can invoked by the API server as needed. This configuration maintains the standard user experience for both the frontend and API of the CBOMkit, mirroring the functionality of the `production` configuration while allowing for more sophisticated or specialized compliance checks to be performed externally. |
@@ -189,22 +199,22 @@ Different deployment configurations utilize distinct sources for compliance veri
 ### Handling of Credentials
 
 When a new scan of a GitHub repository is started, CBOMkit generates a temporary local clone
-of the repository. The frontend enables users to provide GitHub credentials 
+of the repository. The frontend enables users to provide GitHub credentials
 (either a username and password or a personal access token). These credentials are not
-logged or stored; instead, they are directly forwarded 
-to [JGit](https://github.com/eclipse-jgit/jgit) to facilitate the cloning process. 
-After the scan completes - regardless of whether it succeeds or fails - the temporary 
+logged or stored; instead, they are directly forwarded
+to [JGit](https://github.com/eclipse-jgit/jgit) to facilitate the cloning process.
+After the scan completes - regardless of whether it succeeds or fails - the temporary
 local clone is deleted.
 
 ### Scanning and CBOM Generation
 
-The CBOMkit leverages advanced scanning technology to identify cryptographic usage within source code and generate 
-Cryptography Bills of Materials (CBOMs). This scanning capability is provided by the 
+The CBOMkit leverages advanced scanning technology to identify cryptographic usage within source code and generate
+Cryptography Bills of Materials (CBOMs). This scanning capability is provided by the
 [CBOMkit-hyperion (Sonar Cryptography Plugin)](https://github.com/cbomkit/sonar-cryptography), an open-source tool developed by IBM.
 
 #### Supported languages and libraries
 
-The current scanning capabilities of the CBOMkit are defined by the Sonar Cryptography Plugin's supported languages 
+The current scanning capabilities of the CBOMkit are defined by the Sonar Cryptography Plugin's supported languages
 and cryptographic libraries:
 
 | Language | Cryptographic Library                                                                         | Coverage | 
@@ -221,8 +231,8 @@ and cryptographic libraries:
 [^2]: All packages under [`crypto`](https://pkg.go.dev/crypto@go1.25.6#section-directories) are covered except `crypto/x509`
 [^3]: Covers `golang.org/x/crypto/hkdf`, `golang.org/x/crypto/pbkdf2`, and `golang.org/x/crypto/sha3`
 
-While the CBOMkit's scanning capabilities are currently bound to the Sonar Cryptography Plugin, the modular 
-design of this plugin allows for potential expansion to support additional languages and cryptographic libraries in 
+While the CBOMkit's scanning capabilities are currently bound to the Sonar Cryptography Plugin, the modular
+design of this plugin allows for potential expansion to support additional languages and cryptographic libraries in
 future updates.
 
 ## Contribution Guidelines

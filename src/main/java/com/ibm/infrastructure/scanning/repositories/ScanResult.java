@@ -24,6 +24,8 @@ import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.Cacheable;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import java.sql.Timestamp;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
@@ -32,7 +34,10 @@ import org.pqca.scanning.Language;
 @Entity
 @Cacheable
 class ScanResult extends PanacheEntity {
-    @Nonnull public Language language;
+    @Nonnull
+    @Enumerated(EnumType.STRING)
+    public Language language;
+
     @Nonnull public Timestamp startTime;
     @Nonnull public Timestamp endTime;
     public int numberOfScannedLines;
