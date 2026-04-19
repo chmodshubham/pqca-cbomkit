@@ -1,6 +1,6 @@
 import { model, ErrorStatus } from "@/model.js";
 import { setCbom } from "@/helpers.js";
-import uuid4 from "uuid4";
+import { v4 as uuidv4 } from "uuid";
 import { API_SCAN_URL } from "@/app.config";
 
 export const STATES = {
@@ -78,7 +78,7 @@ export function connectAndScan(gitBranch, gitSubfolder, credentials) {
   model.resetScanningInfo();
   setCodeOrigin(gitBranch, gitSubfolder);
   setCredentials(credentials)
-  let clientId = uuid4();
+  let clientId = uuidv4();
   let socketURL = `${API_SCAN_URL}/${clientId}`;
   startWebSocket(socketURL);
 }

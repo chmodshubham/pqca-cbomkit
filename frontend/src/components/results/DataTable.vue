@@ -1,15 +1,15 @@
 <template>
   <div class="table">
     <cv-modal ref="modalInfo">
-      <template slot="label"
+      <template #label
         >{{ getTermFullName(this.assetType) ? getTermFullName(this.assetType) : this.assetType }}</template
       >
-      <template slot="title"
+      <template #title
         ><h3>
           {{ assetName.toUpperCase() }}
         </h3></template
       >
-      <template slot="content">
+      <template #content>
         <CryptoAssetDetails
           :asset="currentAssetModal"
           @open-code="openInCode"
@@ -19,9 +19,9 @@
     </cv-modal>
 
     <cv-modal ref="modalPrompt" @after-modal-hidden="resetModal">
-      <template slot="label">{{ modalPromptLabel }}</template>
-      <template slot="title">{{ modalPromptTitle }}</template>
-      <template slot="content">
+      <template #label>{{ modalPromptLabel }}</template>
+      <template #title>{{ modalPromptTitle }}</template>
+      <template #content>
         <GitInfoPrompt ref="gitInfoPrompt" @confirm-prompt="confirmPrompt"/>
       </template>
     </cv-modal>
@@ -31,7 +31,7 @@
       :columns="columns"
       :rows="5"
     >
-      <template slot="actions">
+      <template #actions>
         <cv-button :icon="downloadIcon" :disabled="true">
           Download CBOM
         </cv-button>
@@ -48,7 +48,7 @@
       @pagination="actionOnPagination"
       :overflow-menu="['Details', { label: 'More' }]"
     >
-      <template slot="actions">
+      <template #actions>
         <h5 style="margin-left: 16px; display: flex; align-items: center;" :style="isViewerOnly ? 'margin-right: auto' : ''">
           List of all assets
         </h5>
@@ -90,7 +90,7 @@
           Download CBOM
         </cv-button>
       </template>
-      <template slot="data">
+      <template #data>
         <cv-data-table-row
           v-for="(asset, rowIndex) in paginatedDetections"
           :key="`${rowIndex}`"

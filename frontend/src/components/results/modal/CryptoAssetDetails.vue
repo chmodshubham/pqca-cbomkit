@@ -59,13 +59,13 @@
     
       <div class="list" v-if="getComplianceFindingsWithMessage(asset).length>0" style="margin-bottom: -60px">
         <cv-structured-list condensed="true">
-          <template slot="headings">
+          <template #headings>
             <cv-structured-list-heading>Compliance Information</cv-structured-list-heading>
             <cv-structured-list-heading style="width: 25%">
               Category
             </cv-structured-list-heading>
           </template>
-          <template slot="items">
+          <template #items>
             <cv-structured-list-item v-for="(finding, index) in getComplianceFindingsWithMessage(asset)" :key="index">
               <cv-structured-list-data>
                 {{ finding.message }}
@@ -91,13 +91,13 @@
     </h4>
     <div class="list">
       <cv-structured-list condensed="true">
-        <template slot="headings">
+        <template #headings>
           <cv-structured-list-heading style="width: 30%"
             >Type</cv-structured-list-heading
           >
           <cv-structured-list-heading>Value</cv-structured-list-heading>
         </template>
-        <template slot="items">
+        <template #items>
           <cv-structured-list-item
             v-for="property in filteredProperties"
             :key="property.name"

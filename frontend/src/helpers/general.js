@@ -1,11 +1,11 @@
 import { model } from "@/model.js";
 
 export function getTitle() {
-  return String(process.env.VUE_APP_TITLE || 'CBOM Service');
+  return String(import.meta.env.VITE_TITLE || 'CBOM Service');
 }
 
 export function isViewerOnly() {
-  return String(process.env.VUE_APP_VIEWER_ONLY) === "true";
+  return String(import.meta.env.VITE_VIEWER_ONLY) === "true";
 }
 
 export function capitalizeFirstLetter(string) {

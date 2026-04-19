@@ -13,7 +13,7 @@
       :multiple="false"
       :removable="true"
     >
-      <template slot="drop-target">
+      <template #drop-target>
         <div :class="isViewerOnly ? 'drop-container-viewer' : 'drop-container-generator'">
           <div class="description-container">
             <div :class="isViewerOnly ? 'description-header-viewer' : 'description-header-generator'">
