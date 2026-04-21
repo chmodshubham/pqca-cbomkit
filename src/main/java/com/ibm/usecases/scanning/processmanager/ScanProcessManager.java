@@ -67,6 +67,7 @@ import org.pqca.errors.CBOMSerializationFailed;
 import org.pqca.errors.ClientDisconnected;
 import org.pqca.indexing.IndexingService;
 import org.pqca.indexing.ProjectModule;
+import org.pqca.indexing.csharp.CsharpIndexService;
 import org.pqca.indexing.go.GoIndexService;
 import org.pqca.indexing.java.JavaIndexService;
 import org.pqca.indexing.python.PythonIndexService;
@@ -76,6 +77,7 @@ import org.pqca.progress.ProgressMessageType;
 import org.pqca.scanning.Language;
 import org.pqca.scanning.ScanResultDTO;
 import org.pqca.scanning.ScannerService;
+import org.pqca.scanning.csharp.CsharpScannerService;
 import org.pqca.scanning.go.GoScannerService;
 import org.pqca.scanning.java.JavaScannerService;
 import org.pqca.scanning.python.PythonScannerService;
@@ -301,6 +303,9 @@ public final class ScanProcessManager extends ProcessManager<ScanId, ScanAggrega
                     Language.PYTHON, new PythonIndexService(this.progressDispatcher, projectDir));
             // go
             indexers.put(Language.GO, new GoIndexService(this.progressDispatcher, projectDir));
+            // csharp
+            indexers.put(
+                    Language.CSHARP, new CsharpIndexService(this.progressDispatcher, projectDir));
 
             // run indexers
             for (Language language : Language.values()) {
@@ -368,6 +373,10 @@ public final class ScanProcessManager extends ProcessManager<ScanId, ScanAggrega
             final GoScannerService goScannerService =
                     new GoScannerService(this.progressDispatcher, this.projectDirectory);
             scanners.put(Language.GO, goScannerService);
+            // csharp
+            final CsharpScannerService csharpScannerService =
+                    new CsharpScannerService(this.progressDispatcher, this.projectDirectory);
+            scanners.put(Language.CSHARP, csharpScannerService);
 
             // progress scan statistics
             final long startTime = System.currentTimeMillis();
