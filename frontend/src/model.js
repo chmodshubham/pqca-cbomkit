@@ -19,6 +19,7 @@ export const model = reactive({
     startTime: null,
     scanDuration: null,
     totalDuration: null,
+    scanLogs: [],
   },
   codeOrigin: {
     projectIdentifier: null,
@@ -57,6 +58,7 @@ export const model = reactive({
     model.scanning.startTime = null;
     model.scanning.scanDuration = null;
     model.scanning.totalDuration = null;
+    model.scanning.scanLogs = [];
     model.codeOrigin.commitID = null;
     model.cbom = null;
     model.dependencies = null;

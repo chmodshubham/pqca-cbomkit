@@ -127,7 +127,7 @@ export function isUsingLocalComplianceService() {
 
 // Returns an object specyfing the compliance labels (and long labels) for each used compliance level
 export function getComplianceLevels() {
-    return hasValidComplianceResults ? model.policyCheckResult.complianceLevels : [];
+    return hasValidComplianceResults() ? model.policyCheckResult.complianceLevels : [];
 }
 
 // Returns a boolean indicating whether we have a valid object describing the compliance results (and no error has occurred)
@@ -235,7 +235,7 @@ export function getColorScale() {
 
   let colorScale = {};
 
-  Object.keys(countsMap).forEach(id => {
+  Object.keys(countsMap).filter(id => countsMap[id] > 0).forEach(id => {
     colorScale[labelsMap[id]] = colorsMap[id];
   });
 

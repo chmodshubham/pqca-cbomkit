@@ -15,6 +15,10 @@ export function getTermFullName(termName) {
   }
 }
 
+export function displayTerm(termName) {
+  return getTermFullName(termName) || termName;
+}
+
 export function getTermDescription(termName) {
   // Check if the term description is in the database
   if (
@@ -37,23 +41,16 @@ export function countOccurrences(algorithmProperty) {
   if (detections && Array.isArray(detections)) {
     // Iterate over each component
     detections.forEach((component) => {
-      // Check if each component has the required fields
-      if (
-        component &&
-        component.cryptoProperties &&
-        component.cryptoProperties.algorithmProperties &&
-        component.cryptoProperties.algorithmProperties[algorithmProperty]
-      ) {
-        const propertyRaw =
-          component.cryptoProperties.algorithmProperties[algorithmProperty];
-        // propertyRaw is either directly a string, or is an array of strings. We handle both cases below
-        var propertyArray;
-        if (Array.isArray(propertyRaw)) {
-          propertyArray = propertyRaw;
-        } else {
-          propertyArray = [propertyRaw];
-        }
-        propertyArray.forEach((property) => {
+      if (!component) return;
+      const propertyRaw =
+        component.cryptoProperties?.algorithmProperties?.[algorithmProperty];
+
+      // Assets missing the property are counted as "Unspecified"
+      const propertyArray = propertyRaw
+        ? (Array.isArray(propertyRaw) ? propertyRaw : [propertyRaw])
+        : ["Unspecified"];
+
+      propertyArray.forEach((property) => {
           // Update the count of different property value
           if (!propertyOccurrences[property]) {
             count += 1;
@@ -62,7 +59,6 @@ export function countOccurrences(algorithmProperty) {
           propertyOccurrences[property] =
             (propertyOccurrences[property] || 0) + 1;
         });
-      }
     });
   } else {
     console.error('"detections" key does not exist or is not an array.');

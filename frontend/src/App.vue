@@ -1,15 +1,9 @@
 <template>
-  <!-- The div below controls the light or dark mode using classes -->
-  <div
-    :class="{
-      'make-the-carbon-theme-go-dark': model.useDarkMode,
-      'make-the-carbon-theme-go-white': !model.useDarkMode,
-    }"
-  >
+  <div class="make-the-carbon-theme-go-white">
     <div class="main">
       <!-- PRODUCTION APP -->
       <HeaderBar />
-      <div style="padding: 60px 4% 1%" />
+      <div style="padding: 48px 4% 0" />
       <NotificationsView />
       <Transition :name="transitionName" mode="out-in">
         <ResultsView v-if="model.showResults" />
@@ -37,13 +31,14 @@
 
 <script>
 import { model } from "@/model.js";
+import { showResultFromUpload } from "@/helpers";
 import HeaderBar from "@/components/global/HeaderBar.vue";
 import HomeView from "@/components/home/HomeView.vue";
 import ResultsView from "@/components/results/ResultsView.vue";
 import NotificationsView from "@/components/global/NotificationsView.vue";
 import FooterView from "@/components/global/FooterView.vue";
 import DebugView from "@/components/DebugView.vue";
-import "@/styles/carbon-both.css"; // This stylesheet contains both light and dark modes
+import "@/styles/carbon-both.css";
 
 export default {
   name: "App",
@@ -59,7 +54,6 @@ export default {
   data() {
     return {
       model,
-      isDarkMode: window.matchMedia("(prefers-color-scheme: dark)").matches,
     };
   },
   computed: {
@@ -67,13 +61,11 @@ export default {
       return this.model.showResults ? "slide-results" : "slide-home";
     },
   },
-  watch: {
-    "model.useDarkMode": function (newMode) {
-      // The classes 'make-the-carbon-theme-go-dark' and 'make-the-carbon-theme-go-white' control the theme of the components
-      // However, the background of the body and the font color are not affected, and are handled separately here
-      document.body.style.color = newMode ? "white" : "black";
-      document.body.style.backgroundColor = newMode ? "#262626" : "white";
-    },
+  async mounted() {
+    if (new URLSearchParams(window.location.search).get("demo") === "1") {
+      const { default: demoCbom } = await import("../resources/keycloak-cbom.json");
+      showResultFromUpload(demoCbom, "keycloak-cbom.json");
+    }
   },
 };
 </script>
@@ -81,8 +73,9 @@ export default {
 <style scoped>
 .main {
   max-width: 1200px;
-  min-height: 100vh; /* Set main height to 100% of the viewport height */
+  min-height: 100vh;
   margin: auto;
+  font-family: var(--font-body, 'Inter', -apple-system, sans-serif);
 }
 /* For the debugging view */
 .container {

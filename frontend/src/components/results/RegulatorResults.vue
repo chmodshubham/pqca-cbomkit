@@ -1,156 +1,84 @@
 <template>
   <div>
     <!-- Scanning loader -->
-    <LoaderView
+    <div
       v-if="model.scanning.isScanning"
       class="skeleton-bordered"
-      style="
-        margin-right: auto;
-        padding-left: 16px;
-        display: flex;
-        align-items: center;
-      "
       v-bind:style="{ borderColor: skeletonColor }"
-    />
+    >
+      <cv-inline-loading
+        v-if="model.scanning.scanningStatus != null"
+        ending-text="Scan ended"
+        :error-text="model.scanning.scanningStatusMessage"
+        :loading-text="model.scanning.scanningStatusMessage"
+        loaded-text="Scan finished"
+        :state="model.scanning.scanningStatus"
+      />
+    </div>
 
-    <!-- Skeleton inline notification -->
+    <!-- Loading compliance skeleton -->
     <div
       class="skeleton-bordered"
       v-else-if="isLoadingCompliance"
       v-bind:style="{ borderColor: skeletonColor }"
     >
-      <InProgress16
-        style="margin: 0px 16px 0px 6px"
-        v-bind:style="{ color: skeletonColor }"
-      />
+      <InProgress16 style="margin: 0px 16px 0px 6px" v-bind:style="{ color: skeletonColor }" />
       <h6 style="padding: 7px 12px 7px 0px">Analyzing compliance...</h6>
-      <cv-skeleton-text
-        v-if="true"
-        :heading="false"
-        :paragraph="false"
-        :line-count="1"
-        style="margin-bottom: -8px; width: 60%"
-      >
-      </cv-skeleton-text>
+      <cv-skeleton-text :heading="false" :paragraph="false" :line-count="1" style="margin-bottom: -8px; width: 60%" />
     </div>
 
     <!-- Inline notification -->
     <cv-inline-notification
       v-else
-      :kind="this.kind"
-      :title="this.title"
-      :sub-title="this.description"
+      :kind="kind"
+      title=""
+      :sub-title="description"
       :low-contrast="true"
       :hide-close-button="true"
       style="margin: 0px"
       v-bind:style="{ background: backgroundColor }"
-    >
-    </cv-inline-notification>
+    />
   </div>
 </template>
 
 <script>
 import { model } from "@/model.js";
-import { getComplianceReport,
+import {
+  getComplianceReport,
   isLoadingCompliance,
   hasValidComplianceResults,
   globalComplianceResult,
-  getCompliancePolicyName,
-  getComplianceServiceName} from "@/helpers";
+} from "@/helpers";
 import { InProgress16 } from "@carbon/icons-vue";
-import LoaderView from "@/components/results/LoaderView.vue";
 
 export default {
   name: "RegulatorResults",
-  data() {
-    return {
-      model,
-    };
-  },
-  components: {
-    InProgress16,
-    LoaderView,
-  },
+  data() { return { model }; },
+  components: { InProgress16 },
   computed: {
     isLoadingCompliance,
-    getComplianceServiceName,
-    title() {
-      if (isLoadingCompliance()) {
-        return "Analyzing compliance...";
-      }
-      if (hasValidComplianceResults()) {
-        if (globalComplianceResult()) {
-          return "Compliant –";
-        } else {
-          return "Not compliant –";
-        }
-      }
-      return "Compliance results unavailable –";
-    },
     description() {
-      let complianceServiceName = getComplianceServiceName();
-      let sourceString = ""
-      if (complianceServiceName !== "") {
-        sourceString = `<br/><span style="font-size: x-small;">Source: ${getComplianceServiceName()}</span>`
-      }
-      if (isLoadingCompliance()) {
-        return "";
-      }
-      if (hasValidComplianceResults()) {
-        const complianceText = globalComplianceResult() 
-          ? "complies with the policy" 
-          : "does not comply with the policy";
-        return `This CBOM ${complianceText} "${getCompliancePolicyName()}".` + sourceString;
-      }
-      return `Compliance could not be assessed at this time.` + sourceString;
+      return "Export the CBOM before initiating a new scan, as subsequent scans overwrite and do not retain prior results.";
     },
     backgroundColor() {
-      if (model.useDarkMode && !isLoadingCompliance()) {
-        if (!hasValidComplianceResults()) {
-          return "#2f4c78";
-        }
-        else if (globalComplianceResult()) {
-          return "#1B5E20";
-        } else {
-          return "#705b1a";
-        }
-      }
-      // In light mode, returning an empty string keeps the default background color of the component
       return "";
     },
     skeletonColor() {
-      if (model.useDarkMode) {
-        return "#929191";
-      } else {
-        return "#BAB9B9";
-      }
+      return "#BAB9B9";
     },
     kind() {
       if (hasValidComplianceResults()) {
-        if (globalComplianceResult()) {
-          return "success";
-        } else {
-          return "warning";
-        }
+        return globalComplianceResult() ? "success" : "warning";
       }
       return "info";
     },
   },
   beforeMount() {
-    // Executed on page load
-    // Case where the results page is loaded with a CBOM (when uploading a CBOM or clicking on recent scans)
-    // The CBOM is therefore immediately sent to the API
-    if (model.cbom != null) {
-      getComplianceReport(model.cbom);
-    }
+    if (model.cbom != null) getComplianceReport(model.cbom);
   },
   watch: {
-    // Case where the results page is loaded without a CBOM yet (when starting the scan of a repo)
-    // The CBOM is sent to the API as soon as it is received by the client
-    "model.cbom": function (newResult) {
-      if (newResult != null) {
-        getComplianceReport(model.cbom);
-      }
+    "model.cbom"(newResult) {
+      if (newResult != null) getComplianceReport(model.cbom);
     },
   },
 };
@@ -163,12 +91,11 @@ export default {
   border-width: thin;
   border-color: lightgray;
   border-left-width: medium;
-  display: flex; /* Use flexbox to arrange items horizontally */
+  display: flex;
   align-items: center;
 }
 </style>
 
-<!-- Allows cv-inline-notification to fully extend horizontally -->
 <style>
 .bx--inline-notification {
   max-width: none !important;

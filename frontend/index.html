@@ -4,8 +4,33 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width,initial-scale=1.0" />
-    <link rel="icon" href="/favicon.ico" />
+    <link rel="icon" href="/pqstation-icon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
     <title>%VITE_TITLE%</title>
+    <style>
+      *, *::before, *::after { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; font-family: 'ABeeZee', sans-serif !important; background: #f2f2f7; }
+      p, li, td, th, label, .node-tooltip__body { text-align: justify; }
+      :root {
+        --font-display: 'ABeeZee', sans-serif;
+        --font-body: 'ABeeZee', sans-serif;
+        --c-bg: #e8e8ed;
+        --c-surface: #ffffff;
+        --c-surface-secondary: #f2f2f7;
+        --c-border: rgba(0,0,0,0.06);
+        --c-ink: #0a0a0c;
+        --c-ink-secondary: #48484a;
+        --c-ink-tertiary: #8e8e93;
+        --c-accent: #0071e3;
+        --c-accent-hover: #005ec4;
+        --radius-card: 18px;
+        --radius-input: 11px;
+        --shadow-card: 0 2px 8px rgba(0,0,0,0.10), 0 8px 32px rgba(0,0,0,0.12);
+        --transition: 0.18s cubic-bezier(0.4,0,0.2,1);
+      }
+    </style>
     <script type="module">
       window.digitalData = {
         page: {

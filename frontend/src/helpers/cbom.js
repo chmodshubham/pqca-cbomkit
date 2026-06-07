@@ -311,17 +311,21 @@ export function getCbomFromScan(scan) {
 
 }
 
+let _detectionsCache = { key: null, value: [] };
+
 export function getDetections() {
-  var detections = getDetectionsFromCbom(model.cbom);
-  if (model.scanning.isScanning) {
-    detections = model.scanning.liveDetections;
-  }
-  return removeBomRefFromDetectionNames(detections); 
+  const live = model.scanning.isScanning || model.cbom === null;
+  const source = live ? model.scanning.liveDetections : model.cbom;
+  const key = live ? `live:${source.length}` : source;
+  if (_detectionsCache.key === key) return _detectionsCache.value;
+  const detections = live
+    ? removeBomRefFromDetectionNames([...source])
+    : removeBomRefFromDetectionNames(getDetectionsFromCbom(source));
+  _detectionsCache = { key, value: detections };
+  return detections;
 }
 
 function removeBomRefFromDetectionNames(detections) {
-  // Some detections have a name "actual-name@xxx-xxx-xxx", containing their bomRef
-  // We remove this bomRef from a cleaner visualization
   detections.forEach(function (detection) {
     if (Object.hasOwn(detection, "name") && detection.name.includes("@")) {
       detection.name = detection.name.split('@')[0]

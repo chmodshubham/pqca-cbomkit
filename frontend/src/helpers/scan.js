@@ -10,6 +10,13 @@ export const STATES = {
   ENDING: 'ending',
 };
 
+const SCAN_LOG_LIMIT = 1000;
+function pushLog(entry) {
+  const logs = model.scanning.scanLogs;
+  logs.push(entry);
+  if (logs.length > SCAN_LOG_LIMIT) logs.splice(0, logs.length - SCAN_LOG_LIMIT);
+}
+
 // This var is set to true when the client closes the socket. It is reinitialized to false when a new socket is created.
 var socketWasManuallyClosed = false;
 
@@ -124,6 +131,7 @@ function handleMessage(messageJson) {
   // console.log(obj)
   if (obj["type"] === "LABEL") {
     model.scanning.scanningStatusMessage = obj["message"];
+    pushLog({ text: obj["message"], kind: "label" });
     if (obj["message"] === "Starting...") {
       model.scanning.startTime = new Date();
     }
@@ -136,21 +144,29 @@ function handleMessage(messageJson) {
       ); // Time in seconds
     }
   } else if (obj["type"] === "ERROR") {
-    model.addError(ErrorStatus.ScanError, model.scanning.scanningStatusMessage = obj["message"]); //
-    // update state
+    model.addError(ErrorStatus.ScanError, model.scanning.scanningStatusMessage = obj["message"]);
     model.scanning.scanningStatusMessage = obj["message"];
     model.scanning.scanningStatus = STATES.ERROR;
     model.scanning.isScanning = false;
-    // log
+    pushLog({ text: "ERROR  " + obj["message"], kind: "error" });
     console.error("Error:", model.scanning.scanningStatusMessage);
   } else if (obj["type"] === "WARNING") {
-    model.addError(ErrorStatus.ScanWarning, model.scanning.scanningStatusMessage = obj["message"]); //
-    // log
+    model.addError(ErrorStatus.ScanWarning, model.scanning.scanningStatusMessage = obj["message"]);
+    pushLog({ text: "WARN   " + obj["message"], kind: "warn" });
     console.warn("Warning:", model.scanning.scanningStatusMessage);
   } else if (obj["type"] === "DETECTION") {
     let cryptoAssetJson = obj["message"];
     const cryptoAsset = JSON.parse(cryptoAssetJson);
     model.scanning.liveDetections.push(cryptoAsset);
+    const name = cryptoAsset?.name || "unknown";
+    const assetType = cryptoAsset?.cryptoProperties?.assetType || "";
+    const primitive = cryptoAsset?.cryptoProperties?.detectionContext?.[0]?.additionalContext || "";
+    const loc = cryptoAsset?.evidence?.occurrences?.[0]?.location || "";
+    const filePart = loc ? loc.replace(/^.*\/([^/]+)$/, "$1") : "";
+    const linePart = cryptoAsset?.evidence?.occurrences?.[0]?.line ? `:${cryptoAsset.evidence.occurrences[0].line}` : "";
+    const locStr = filePart ? `  @ ${filePart}${linePart}` : "";
+    const typeStr = assetType ? `  [${assetType}]` : "";
+    pushLog({ text: `FOUND  ${name}${typeStr}${locStr}`, kind: "detection" });
     // console.log("New detection:",obj)
   } else if (obj["type"] === "CBOM") {
     let cbomString = obj["message"];
@@ -198,7 +214,7 @@ function setCodeOrigin(gitBranch, gitSubfolder) {
 }
 
 function setCredentials(credentials) {
-  if (credentials === null) {
+  if (!credentials) {
     return
   }
 

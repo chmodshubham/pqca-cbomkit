@@ -68,6 +68,7 @@ import org.pqca.errors.ClientDisconnected;
 import org.pqca.indexing.IndexingService;
 import org.pqca.indexing.ProjectModule;
 import org.pqca.indexing.cpp.CppIndexService;
+import org.pqca.indexing.csharp.CsharpIndexService;
 import org.pqca.indexing.go.GoIndexService;
 import org.pqca.indexing.java.JavaIndexService;
 import org.pqca.indexing.python.PythonIndexService;
@@ -78,6 +79,7 @@ import org.pqca.scanning.Language;
 import org.pqca.scanning.ScanResultDTO;
 import org.pqca.scanning.ScannerService;
 import org.pqca.scanning.cpp.CppScannerService;
+import org.pqca.scanning.csharp.CsharpScannerService;
 import org.pqca.scanning.go.GoScannerService;
 import org.pqca.scanning.java.JavaScannerService;
 import org.pqca.scanning.python.PythonScannerService;
@@ -305,6 +307,9 @@ public final class ScanProcessManager extends ProcessManager<ScanId, ScanAggrega
             indexers.put(Language.GO, new GoIndexService(this.progressDispatcher, projectDir));
             // cpp
             indexers.put(Language.CPP, new CppIndexService(this.progressDispatcher, projectDir));
+            // csharp
+            indexers.put(
+                    Language.CSHARP, new CsharpIndexService(this.progressDispatcher, projectDir));
 
             // run indexers
             for (Language language : Language.values()) {
@@ -376,6 +381,10 @@ public final class ScanProcessManager extends ProcessManager<ScanId, ScanAggrega
             final CppScannerService cppScannerService =
                     new CppScannerService(this.progressDispatcher, this.projectDirectory);
             scanners.put(Language.CPP, cppScannerService);
+            // csharp
+            final CsharpScannerService csharpScannerService =
+                    new CsharpScannerService(this.progressDispatcher, this.projectDirectory);
+            scanners.put(Language.CSHARP, csharpScannerService);
 
             // progress scan statistics
             final long startTime = System.currentTimeMillis();

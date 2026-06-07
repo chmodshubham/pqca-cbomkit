@@ -15,6 +15,7 @@
       </div>
       <div v-if="getDetections().length > 0 || model.scanning.isScanning">
         <RegulatorResults style="padding-top: 12px" />
+        <LoaderView style="margin: 16px 0 0" />
         <StatisticsView style="padding: 22px 16px" />
       </div>
     </cv-tile>
@@ -26,6 +27,7 @@ import { model } from "@/model.js";
 import { getDetections, numberFormatter, formatSeconds, limitString } from "@/helpers";
 import RegulatorResults from "@/components/results/RegulatorResults.vue";
 import StatisticsView from "@/components/results/StatisticsView.vue";
+import LoaderView from "@/components/results/LoaderView.vue";
 
 export default {
   name: "ResultsTitle",
@@ -37,6 +39,7 @@ export default {
   components: {
     RegulatorResults,
     StatisticsView,
+    LoaderView,
   },
   computed: {
     showLink() {
@@ -76,61 +79,33 @@ export default {
       return title;
     },
     dataTableSubtitle() {
-      let textColor = ""; //model.useDarkMode ? "#4589ff" : "#002d9c"
-      let fontWeight = 500;
+      if (model.scanning.isScanning) {
+        return model.scanning.liveDetections.length === 0
+          ? `<h4>Scanning code for cryptographic assets...</h4>`
+          : `<h4>${model.scanning.liveDetections.length} cryptographic assets found...</h4>`;
+      }
 
-      var title = "";
-      if (
-        model.scanning.isScanning &&
-        model.scanning.liveDetections.length === 0
-      ) {
-        title = "Scanning code for cryptographic assets...";
-      } else if (
-        model.scanning.isScanning &&
-        model.scanning.liveDetections.length > 0
-      ) {
-        title = `<span style="color: ${textColor}; font-weight: ${fontWeight};">${model.scanning.liveDetections.length}</span> cryptographic assets found...`;
-      } else if (getDetections().length > 1) {
-        title = `<span style="color: ${textColor}; font-weight: ${fontWeight};">${
-          getDetections().length
-        }</span> cryptographic assets found.`;
-      } else if (getDetections().length === 1) {
-        title = `<span style="color: ${textColor}; font-weight: ${fontWeight};">${
-          getDetections().length
-        }</span> cryptographic asset found.`;
-      } else {
-        title = "No cryptographic asset has been found.";
-      }
+      let parts = [];
+
       if (model.scanning.numberOfFiles && model.scanning.numberOfLines) {
-        title += ` Scanned <span style="color: ${textColor}; font-weight: ${fontWeight};">${numberFormatter(
-          model.scanning.numberOfLines
-        )}</span> ${
-          model.scanning.numberOfLines > 1 ? "lines" : "line"
-        } of code across <span style="color: ${textColor}; font-weight: ${fontWeight};">${numberFormatter(
-          model.scanning.numberOfFiles
-        )}</span> ${model.scanning.numberOfFiles > 1 ? "files" : "file"}.`;
+        const lines = numberFormatter(model.scanning.numberOfLines);
+        const files = numberFormatter(model.scanning.numberOfFiles);
+        const lineWord = model.scanning.numberOfLines > 1 ? "lines" : "line";
+        const fileWord = model.scanning.numberOfFiles > 1 ? "files" : "file";
+        parts.push(`Scanned ${lines} ${lineWord} of code across ${files} ${fileWord}.`);
       }
+
       if (model.scanning.totalDuration) {
-        var timeSentence = "";
-        if (model.scanning.scanDuration) {
-          timeSentence += ` Took <span style="color: ${textColor}; font-weight: ${fontWeight};">${formatSeconds(
-            model.scanning.scanDuration
-          )}</span> to scan (<span style="color: ${textColor}; font-weight: ${fontWeight};">${formatSeconds(
-            model.scanning.totalDuration
-          )}</span> in total).`;
-        } else {
-          timeSentence += ` Took <span style="color: ${textColor}; font-weight: ${fontWeight};">${formatSeconds(
-            model.scanning.totalDuration
-          )}</span> in total.`;
-        }
-        title += timeSentence;
+        parts.push(`Took ${formatSeconds(model.scanning.totalDuration)} to scan.`);
       }
-      // TODO: make it actually refresh each second
-      // else if (model.scanning.isScanning) {
-      //     let currentTime = new Date()
-      //     title += ` Taking <span style="color: ${textColor}; font-weight: ${fontWeight};">${formatSeconds(currentTime - model.scanning.startTime)}</span>.`
-      // }
-      return `<h4>${title}</h4>`;
+
+      if (parts.length === 0) {
+        const count = getDetections().length;
+        if (count === 0) return `<h4>No cryptographic asset has been found.</h4>`;
+        return `<h4>${count} cryptographic asset${count > 1 ? "s" : ""} found.</h4>`;
+      }
+
+      return `<h4>${parts.join(" ")}</h4>`;
     },
   },
   methods: {
@@ -139,3 +114,23 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.result-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin: 10px 0 4px;
+  padding: 8px 12px;
+  background: rgba(217, 119, 6, 0.07);
+  border-left: 3px solid rgba(217, 119, 6, 0.6);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #78450a;
+  line-height: 1.5;
+}
+
+.result-note strong {
+  font-weight: 600;
+}
+</style>

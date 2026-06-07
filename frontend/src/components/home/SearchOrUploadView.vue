@@ -1,107 +1,95 @@
 <template>
-    <div>
-        <div class="list-table">
-            <div class="icon-and-title-container">
-              <Catalog24/>
-              <div class="large-title">
-                Explore previously scanned CBOMs
-              </div>
-            </div>
-            <ListTable />
-        </div>
-
-        <div style="display: flex;">
-          <cv-tile kind="standard" style="margin-right: 1.5%; flex: 7">
-            <div class="card-container">
-              <div class="icon-and-title-container">
-                <AddAlt24/>
-                <div class="title">
-                  Generate a new CBOM
-                </div>
-              </div>
-              <p class="body-text">
-                Submit a new public Git repository to scan and generate a CBOM.
-              </p>
-              <SearchBar/>
-            </div>
-          </cv-tile>
-
-          <cv-tile kind="standard" style="margin-left: 1.5%; flex: 4">
-            <div class="card-container">
-              <div class="icon-and-title-container">
-                <Script24/>
-                <div class="title">
-                  Upload a CBOM
-                </div>
-              </div>
-              <p class="body-text">
-                Upload an existing CBOM to visualize it.
-              </p>
-              <FileUploader/>
-            </div>
-          </cv-tile>
-        </div>
+  <div class="page">
+    <div class="card">
+      <div class="card__body">
+        <SearchBar />
+      </div>
     </div>
+
+  </div>
 </template>
 
 <script>
 import { model } from "@/model.js";
-import FileUploader from "@/components/home/FileUploader.vue";
 import SearchBar from "@/components/home/SearchBar.vue";
-import ListTable from "@/components/home/ListTable.vue";
-import { AddAlt24, Script24, Catalog24 } from "@carbon/icons-vue";
-
 
 export default {
   name: "SearchOrUploadView",
-  components: {
-    SearchBar,
-    ListTable,
-    FileUploader,
-    AddAlt24,
-    Script24,
-    Catalog24
-  },
+  components: { SearchBar },
   data() {
-    return {
-      model,
-    };
+    return { model };
   },
-}
+};
 </script>
 
 <style scoped>
-.list-table {
-  padding: 2% 0% 4%;
-  margin: auto;
-}
-.card-container {
-  padding: 8px;
-  height: 100%;
+.page {
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
-.icon-and-title-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
+
+.card {
+  background: var(--c-surface);
+  border-radius: var(--radius-card);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--shadow-card);
+  overflow: visible;
 }
-.title {
-  font-size: large;
-  font-weight: 500;
-  padding-left: 8px;
+
+.card__head {
+  padding: 20px 22px 0;
 }
-.large-title {
-  font-size: large;
-  font-weight: 500;
-  padding-left: 8px;
+
+.card__body {
+  padding: 14px 22px 20px;
 }
-.small-header {
-  font-size: small;
+
+.card__title {
+  font-family: var(--font-display);
+  font-size: 15px;
   font-weight: 600;
-  margin-bottom: 10px;
+  color: var(--c-ink);
+  margin: 0 0 5px 0;
+  letter-spacing: -0.3px;
 }
-.body-text {
-  padding-bottom: 16px;
+
+.card__desc {
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  color: var(--c-ink-tertiary);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.notice {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  background: var(--c-surface-secondary);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.notice__bar {
+  width: 3px;
+  border-radius: 2px;
+  background: rgba(217,119,6,0.6);
+  flex-shrink: 0;
+}
+
+.notice__text {
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--c-ink-secondary);
+  line-height: 1.6;
+  margin: 0;
+}
+
+.notice__label {
+  font-weight: 600;
+  color: var(--c-ink);
+  margin-right: 4px;
 }
 </style>
